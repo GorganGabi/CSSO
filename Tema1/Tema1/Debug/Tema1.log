@@ -1,0 +1,7 @@
+﻿  Source.cpp
+f:\proiecte\visual studio projects\c++\csso\tema1\tema1\source.cpp(57): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::string'
+f:\proiecte\visual studio projects\c++\csso\tema1\tema1\source.cpp(59): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'DWORD (__stdcall *)(void)'
+f:\proiecte\visual studio projects\c++\csso\tema1\tema1\source.cpp(73): warning C4477: 'printf' : format string '%s' requires an argument of type 'char *', but variadic argument 1 has type 'std::string'
+f:\proiecte\visual studio projects\c++\csso\tema1\tema1\source.cpp(75): warning C4477: 'printf' : format string '%d' requires an argument of type 'int', but variadic argument 1 has type 'DWORD (__stdcall *)(void)'
+f:\proiecte\visual studio projects\c++\csso\tema1\tema1\source.cpp(16): warning C4101: 'lpData': unreferenced local variable
+  Tema1.vcxproj -> F:\Proiecte\Visual Studio Projects\C++\CSSO\Tema1\Debug\Tema1.exe
