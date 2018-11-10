@@ -6,7 +6,7 @@ using namespace std;
 int main()
 {
 
-	HANDLE hData;
+	HANDLE hData, hMutex;
 	char *pData;
 	int a, b;
 
@@ -23,13 +23,27 @@ int main()
 		return 0;
 	}
 
+	if ((hMutex = OpenMutex(SYNCHRONIZE, TRUE, "mutex")) == NULL)
+	{
+		cout << "Cannot open the mutex. Error code: " << GetLastError();
+		CloseHandle(hData);
+		return -1;
+	}
+
 	for (int i = 0; i < 200; i++)
 	{
+		
+		WaitForSingleObject(hMutex, INFINITE);
+
 		memcpy(&a, pData, sizeof(DWORD));
 		pData += sizeof(DWORD);
 		memcpy(&b, pData, sizeof(DWORD));
 		pData += sizeof(DWORD);
-		cout << "Am citit din fisierul mapat a = " << a << " si b = " << b << endl;
+
+		cout << i + 1 << ". Threadul cu id-ul " << GetCurrentThreadId() << " citeste din fisierul mapat a = " << a << " si b =" << b << endl;
+
+		ReleaseMutex(hMutex);
 	}
-	return 1;
+
+	return 0;
 }
