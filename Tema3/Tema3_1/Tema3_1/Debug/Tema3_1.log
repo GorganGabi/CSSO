@@ -1,2 +1,5 @@
 ﻿  Source.cpp
+c:\users\gabi\documents\github\csso\tema3\tema3_1\tema3_1\source.cpp(36): warning C4101: 'ThreadID': unreferenced local variable
+c:\users\gabi\documents\github\csso\tema3\tema3_1\tema3_1\source.cpp(35): warning C4101: 'aThread': unreferenced local variable
+LINK : warning LNK4044: unrecognized option '/FS'; ignored
   Tema3_1.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema3\Tema3_1\Debug\Tema3_1.exe

@@ -10,7 +10,7 @@ DWORD WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
 	DWORD a, b;
 
 	srand((int)time(0));
-	for (int i = 0; i < 200; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		WaitForSingleObject(hMutex, INFINITE);
 
@@ -21,16 +21,18 @@ DWORD WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
 		memcpy(pData, &b, sizeof(b));
 		pData += sizeof(DWORD);
 
-		cout << i + 1 << ". Threadul cu id-ul " << GetCurrentThreadId() <<" scrie in fisierul mapat a = " << a << " si b =" << b << endl;
-		ReleaseMutex(hMutex);
+		cout << i + 1 << ". Threadul cu id-ul " << GetCurrentThreadId() <<" scrie in fisierul mapat a = " << a << " si b = " << b << endl;
+		if (ReleaseMutex(hMutex) == 0)
+		{
+			cout << "[Process 1] Could not release the mutex. Error code: " << GetLastError() << endl;
+		}
 	}
-	Sleep(INFINITE);
 	return TRUE;
 }
 
 int main()
 {
-	HANDLE aThread[2];
+	HANDLE aThread[1];
 	DWORD ThreadID;
 	HANDLE hData, hMutex;
 	unsigned char* pData;
@@ -41,53 +43,38 @@ int main()
 
 	if ((hData = CreateFileMapping(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, 1024 * 1024, "data")) == NULL)
 	{
-		cout << "Cannot create file mapping. Error code: " << GetLastError();
+		cout << "[Process 1] Cannot create file mapping. Error code: " << GetLastError();
 		return -1;
 	}
 
 
 	if ((pData = (unsigned char*)MapViewOfFile(hData, FILE_MAP_WRITE, 0, 0, 0)) == NULL) {
-		cout<< "Cannot get pointer to file mapping. Error code: "<< GetLastError();
+		cout<< "[Process 1] Cannot get pointer to file mapping. Error code: "<< GetLastError();
 		CloseHandle(hData);
 		return -1;
 	}
 
 	if ((hMutex = CreateMutex(NULL, TRUE, "mutex")) == NULL)
 	{
-		cout << "Cannot create the mutex. Error code: " << GetLastError();
+		cout << "[Process 1] Cannot create the mutex. Error code: " << GetLastError();
 		CloseHandle(hData);
 		return -1;
 	}
 
 	if (!CreateProcess("C:\\Users\\Gabi\\Documents\\GitHub\\CSSO\\Tema3\\Tema3_2\\Debug\\Tema3_2.exe", NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-		cout<< "Cannot create process.Error code: " << GetLastError();
+		cout<< "[Process 1] Cannot create process.Error code: " << GetLastError();
 		return 0;
 	}
-
-	for (int i = 0; i < 1; i++)
-	{
-		aThread[i] = CreateThread(
-			NULL,       // default security attributes
-			0,          // default stack size
-			(LPTHREAD_START_ROUTINE)WriteToFileMap(hMutex, pData),
-			NULL,       // no thread function arguments
-			0,          // default creation flags
-			&ThreadID); // receive thread identifier
-
-		if (aThread[i] == NULL)
-		{
-			printf("CreateThread error: %d\n", GetLastError());
-			return 1;
-		}
+	else {
+		cout << "[Process 1] S-a creat procesul! " << endl;
 	}
 
-	//WaitForMultipleObjects(1, aThread, TRUE, INFINITE);
-	WaitForSingleObject(aThread, INFINITE);
+	WriteToFileMap(hMutex, pData);
 
-	for (int i = 0; i < 1; i++)
-		CloseHandle(aThread[i]);
-
+	system("pause");
 	CloseHandle(hMutex);
 	CloseHandle(hData);
+
+
 	return 0;
 }
