@@ -4,12 +4,12 @@
 
 using namespace std;
 
-DWORD WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
+void WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
 {
 	DWORD a, b;
 
 	srand((int)time(0));
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 200; i++)
 	{
 		WaitForSingleObject(hMutex, INFINITE);
 
@@ -17,20 +17,44 @@ DWORD WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
 		pData += sizeof(DWORD);
 		memcpy(&b, pData, sizeof(DWORD));
 		pData += sizeof(DWORD);
-		cout << i + 1 << ". Threadul cu id-ul " << GetCurrentThreadId() << " citeste din fisierul mapat a = " << a << " si b =" << b << endl;
+		if (2 * a == b)
+			cout <<"[Process 2] " << i + 1 << ". Correct pentru a = " << a << " b = " << b << endl;
+		else
+			cout <<"[Process 2] " << i + 1 << ". Incorrect pentru a = " << a << " b = " << b << endl;
 
 		ReleaseMutex(hMutex);
 	}
-	return TRUE;
 }
 
+void WINAPI WriteToFileMap(HANDLE hEventWrite, HANDLE hEventCheck, unsigned char* pData)
+{
+	DWORD a, b;
 
+	srand((int)time(0));
+	for (int i = 0; i < 200; i++)
+	{
+		WaitForSingleObject(hEventWrite, INFINITE);
+	
+		a = (rand() % 1000) + 1;
+		b = 2 * a;
+		memcpy(pData, &a, sizeof(a));
+		pData += sizeof(DWORD);
+		memcpy(pData, &b, sizeof(b));
+		pData += sizeof(DWORD);
+
+		if (2 * a == b)
+			cout << "[Process 2] " << i + 1 << ". Correct pentru a = " << a << " b = " << b << endl;
+		else
+			cout << "[Process 2] " << i + 1 << ". Incorrect pentru a = " << a << " b = " << b << endl;
+		SetEvent(hEventCheck);
+	}
+}
 
 int main()
 {
 	HANDLE aThread[1];
 	DWORD ThreadID;
-	HANDLE hData, hMutex;
+	HANDLE hData, hMutex = NULL, hEventWrite = NULL, hEventCheck = NULL;
 	unsigned char *pData;
 	int a, b;
 	if ((hData = OpenFileMappingA(FILE_MAP_ALL_ACCESS, FALSE, "data")) == NULL)
@@ -46,14 +70,34 @@ int main()
 		return 0;
 	}
 
-	if ((hMutex = OpenMutex(SYNCHRONIZE, FALSE, "mutex")) == NULL)
+	/*if ((hMutex = OpenMutex(SYNCHRONIZE, FALSE, "mu")) == NULL)
 	{
 		cout << "[Process 2] Cannot open the mutex. Error code: " << GetLastError();
 		CloseHandle(hData);
 		return -1;
-	}
+	}*/
 
-	WriteToFileMap(hMutex, pData);
+	if ((hEventWrite = OpenEvent(SYNCHRONIZE, FALSE, "write_event")) == NULL)
+	{
+		cout << "[Process 2] Cannot open the event. Error code: " << GetLastError();
+		CloseHandle(hData);
+		return -1;
+	}
+	if ((hEventCheck = OpenEvent(EVENT_MODIFY_STATE, FALSE, "check_event")) == NULL)
+	{
+		cout << "[Process 2] Cannot open the event. Error code: " << GetLastError();
+		CloseHandle(hData);
+		return -1;
+	}
+	
+
+	//WriteToFileMap(hMutex, pData);
+	WriteToFileMap(hEventWrite, hEventCheck, pData);
+
+	CloseHandle(hMutex);
+	CloseHandle(hEventCheck);
+	CloseHandle(hEventWrite);
+	CloseHandle(hData);
 
 	return 0;
 }
