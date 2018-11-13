@@ -101,7 +101,7 @@ int main()
 	}
 	else
 	{
-		if ((hEventWrite = CreateEvent(NULL, FALSE, TRUE, "write_event")) == NULL)
+		if ((hEventWrite = CreateEvent(NULL, TRUE, TRUE, "write_event")) == NULL)
 		{
 			cout << "[Process 1] Cannot create the event. Error code: " << GetLastError();
 			CloseHandle(hData);

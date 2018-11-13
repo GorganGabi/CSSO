@@ -22,7 +22,10 @@ void WINAPI WriteToFileMap(HANDLE hMutex, unsigned char* pData)
 		else
 			cout <<"[Process 2] " << i + 1 << ". Incorrect pentru a = " << a << " b = " << b << endl;
 
-		ReleaseMutex(hMutex);
+		if (ReleaseMutex(hMutex) == 0)
+		{
+			cout << "[Process 2] Could not release the mutex. Error code: " << GetLastError() << endl;
+		}
 	}
 }
 
