@@ -86,6 +86,10 @@ int main()
 		return -1;
 	}
 
+	//trimitem comanda utilizatorului
+	memcpy(pData, &user_input, sizeof(user_input));
+	pData += sizeof(DWORD);
+
 	if (user_input)
 	{
 		if ((hMutex = CreateMutex(NULL, FALSE, "mu")) == NULL)
@@ -125,10 +129,10 @@ int main()
 		WriteToFileMap(hEventWrite, hEventCheck, pData);
 	}
 
-	Sleep(INFINITE);
 	CloseHandle(hMutex);
 	CloseHandle(hEventCheck);
 	CloseHandle(hEventWrite);
+	Sleep(INFINITE);
 	CloseHandle(hData);
 
 	return 0;

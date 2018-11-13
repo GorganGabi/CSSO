@@ -1,6 +1,6 @@
 ﻿  Source.cpp
-c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(59): warning C4101: 'a': unreferenced local variable
-c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(56): warning C4101: 'ThreadID': unreferenced local variable
-c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(59): warning C4101: 'b': unreferenced local variable
-c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(55): warning C4101: 'aThread': unreferenced local variable
+c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(57): warning C4101: 'a': unreferenced local variable
+c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(54): warning C4101: 'ThreadID': unreferenced local variable
+c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(57): warning C4101: 'b': unreferenced local variable
+c:\users\gabi\documents\github\csso\tema3\tema3_2\tema3_2\source.cpp(53): warning C4101: 'aThread': unreferenced local variable
   Tema3_2.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema3\Tema3_2\Debug\Tema3_2.exe
