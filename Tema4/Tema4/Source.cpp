@@ -22,15 +22,25 @@ bool has_prefix(const string &str, const string &prefix)
 
 int main()
 {
-	HINTERNET hInternetOpen, hInternetConnect, hHttpOpenRequest, hFtpOpenFile, hFtpFindFirstFile, hInternetFindNextFile;
+	HINTERNET hInternetOpen, hInternetOpen1, hInternetConnect, hInternetConnect1, hHttpOpenRequest, hFtpOpenFile, hFtpFindFirstFile, hInternetFindNextFile;
 	char* response[256];
 	WIN32_FIND_DATA FileData;
 
-	if ((hInternetOpen = InternetOpen("Filezilla Client",
+	if ((hInternetOpen = InternetOpen("CSSO_ftp",
 									  INTERNET_OPEN_TYPE_PRECONFIG,
 									  NULL,
 									  NULL,
 									  0)) == NULL)
+	{
+		cout << "InternetOpen error. Error: " << GetLastError() << endl;
+		return -1;
+	}
+
+	if ((hInternetOpen1 = InternetOpen("CSSO_hhtp",
+		INTERNET_OPEN_TYPE_DIRECT,
+		NULL,
+		NULL,
+		0)) == NULL)
 	{
 		cout << "InternetOpen error. Error: " << GetLastError() << endl;
 		return -1;
@@ -77,25 +87,56 @@ int main()
 					{
 						if (has_prefix(line, "http") && has_suffix(line, ".exe"))
 						{
-							cout << file.c_str() << endl;
-							/*if (!FtpGetFile(hInternetConnect,
-											FileData.cFileName,
-											FileData.cFileName,
-										    FALSE,
-										    FILE_ATTRIBUTE_NORMAL,
-										    FTP_TRANSFER_TYPE_ASCII,
-								            NULL))
+							cout << file.c_str() << " " << line << endl;
+							//aici nu hardcoda
+							if ((hInternetConnect1 = InternetConnect(hInternetOpen1,
+								"students.info.uaic.ro",
+								INTERNET_DEFAULT_HTTP_PORT,
+								NULL,
+								NULL,
+								INTERNET_SERVICE_HTTP,
+								NULL,
+								0)) == NULL)
 							{
-								cout << "Nu am descarcat. Err code: "<< GetLastError() << endl;
-
-								DWORD error;
-								char buffer[256];
-								DWORD buffer_len = 256;
-								InternetGetLastResponseInfo(&error, buffer, &buffer_len);
-
-								cout << "Error buffer: " << endl << buffer << endl;
+								cout << "InternetOpenUrl error. Error: " << GetLastError() << endl;
 								return -1;
-							}*/
+							}
+
+							if ((hHttpOpenRequest = HttpOpenRequest(hInternetConnect1,
+												"GET", 
+												"//~george.popoiu//CCSO//a.exe",
+												"1.1",
+												NULL,
+												NULL,
+												INTERNET_FLAG_RELOAD,
+												NULL)) == NULL)
+							{
+								cout << "HttpOpenRequest error. Error: " << GetLastError() << endl;
+								return -1;
+							}
+
+							if (!HttpSendRequest(hHttpOpenRequest,
+												 NULL,
+												 0,
+												 NULL,
+												 NULL))
+							{
+								cout << "HttpSendRequest error. Error: " << GetLastError() << endl;
+								return -1;
+							}
+
+							char buffer[256];
+							DWORD bytesRead;
+							if (!InternetReadFile(hHttpOpenRequest,
+												  buffer,
+												  256,
+												  &bytesRead))
+							{
+								cout << "InternetReadFile error. Error: " << GetLastError() << endl;
+								return -1;
+							}
+							CloseHandle(hHttpOpenRequest);
+							CloseHandle(hInternetConnect1);
 						}
 					}
 					fin.close();
@@ -104,6 +145,8 @@ int main()
 		}
 	} while (InternetFindNextFile(hFtpFindFirstFile, &FileData));
 
+	CloseHandle(hInternetOpen1);
+	CloseHandle(hFtpFindFirstFile);
 	CloseHandle(hInternetConnect);
 	CloseHandle(hInternetOpen);
 	return 1;

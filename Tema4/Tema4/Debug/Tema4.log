@@ -1,6 +1,5 @@
 ﻿  Source.cpp
 c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(26): warning C4101: 'response': unreferenced local variable
 c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(25): warning C4101: 'hInternetFindNextFile': unreferenced local variable
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(25): warning C4101: 'hHttpOpenRequest': unreferenced local variable
 c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(25): warning C4101: 'hFtpOpenFile': unreferenced local variable
   Tema4.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema4\Debug\Tema4.exe
