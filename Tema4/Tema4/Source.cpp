@@ -26,10 +26,10 @@ int main()
 	WIN32_FIND_DATA FileData;
 
 	if ((hInternetOpen = InternetOpen("CSSO_ftp",
-									  INTERNET_OPEN_TYPE_PRECONFIG,
-									  NULL,
-									  NULL,
-									  0)) == NULL)
+		INTERNET_OPEN_TYPE_PRECONFIG,
+		NULL,
+		NULL,
+		0)) == NULL)
 	{
 		cout << "InternetOpen error. Error: " << GetLastError() << endl;
 		return -1;
@@ -46,23 +46,23 @@ int main()
 	}
 
 	if ((hInternetConnect = InternetConnect(hInternetOpen,
-											"127.0.0.1",
-											INTERNET_DEFAULT_FTP_PORT,
-											"Gabi",
-											"parola", 
-											INTERNET_SERVICE_FTP,
-											INTERNET_FLAG_PASSIVE,
-											0)) == NULL)
+		"127.0.0.1",
+		INTERNET_DEFAULT_FTP_PORT,
+		"Gabi",
+		"parola",
+		INTERNET_SERVICE_FTP,
+		INTERNET_FLAG_PASSIVE,
+		0)) == NULL)
 	{
 		cout << "InternetOpenUrl error. Error: " << GetLastError() << endl;
 		return -1;
 	}
 
 	if ((hFtpFindFirstFile = FtpFindFirstFile(hInternetConnect,
-											 NULL,
-											 &FileData,
-											 INTERNET_FLAG_RELOAD,
-											 NULL)) == NULL)
+		NULL,
+		&FileData,
+		INTERNET_FLAG_RELOAD,
+		NULL)) == NULL)
 	{
 		cout << "FtpFindFirstFile error. Error: " << GetLastError() << endl;
 		return -1;
@@ -72,20 +72,19 @@ int main()
 	{
 		if (FileData.dwFileAttributes & FILE_ATTRIBUTE_NORMAL)
 		{
-			//cout << FileData.cFileName << endl;
+			cout << FileData.cFileName << endl;
 			if (has_suffix(FileData.cFileName, ".txt"))
 			{
 				string name = FileData.cFileName;
 				string file = "F:\\ftpserver\\" + name;
 				ifstream fin(file);
 				string line;
-
 				if (fin.is_open())
 				{
 					while (getline(fin, line))
 					{
 						if (has_prefix(line, "http") && has_suffix(line, ".exe"))
-						{ 
+						{
 							string resource = line.substr(line.find('//', 8)); // /~george.popoiu/CCSO/a.exe
 							string link = line.substr(7, line.length() - (resource.length() + 7)); //students.info.uaic.ro
 
@@ -103,41 +102,45 @@ int main()
 							}
 
 							if ((hHttpOpenRequest = HttpOpenRequest(hInternetConnect1,
-												"GET", 
-												resource.c_str(),
-												"1.1",
-												NULL,
-												NULL,
-												INTERNET_FLAG_RELOAD,
-												NULL)) == NULL)
+								"GET",
+								resource.c_str(),
+								"1.1",
+								NULL,
+								NULL,
+								INTERNET_FLAG_RELOAD,
+								NULL)) == NULL)
 							{
 								cout << "HttpOpenRequest error. Error: " << GetLastError() << endl;
 								return -1;
 							}
 
 							if (!HttpSendRequest(hHttpOpenRequest,
-												 NULL,
-												 0,
-												 NULL,
-												 NULL))
+								NULL,
+								0,
+								NULL,
+								NULL))
 							{
 								cout << "HttpSendRequest error. Error: " << GetLastError() << endl;
 								return -1;
 							}
 
-							char buffer[4096];
+							char buffer[256];
 							DWORD bytesRead;
 							if (!InternetReadFile(hHttpOpenRequest,
-												  buffer,
-												  256,
-												  &bytesRead))
+								buffer,
+								256,
+								&bytesRead))
 							{
 								cout << "InternetReadFile error. Error: " << GetLastError() << endl;
 								return -1;
 							}
-							cout << buffer << endl;
+							string exe = line.substr(line.find_last_of('//') + 1);
+							ofstream fout(exe);
+							fout << buffer;
+
 							while (bytesRead)
 							{
+								memset(buffer, 0, sizeof(buffer));
 								if (!InternetReadFile(hHttpOpenRequest,
 									buffer,
 									256,
@@ -146,9 +149,19 @@ int main()
 									cout << "InternetReadFile error. Error: " << GetLastError() << endl;
 									return -1;
 								}
-								//pun in fisier
+								fout << buffer;
 							}
+							fout.close();
 
+							PROCESS_INFORMATION pi;
+							STARTUPINFO si;
+							memset(&si, 0, sizeof(si));
+							si.cb = sizeof(si);
+
+							if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+								cout << "[Process 1] Cannot create process.Error code: " << GetLastError();
+								return -1;
+							}
 							CloseHandle(hHttpOpenRequest);
 							CloseHandle(hInternetConnect1);
 						}
