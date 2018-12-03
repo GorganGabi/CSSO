@@ -22,8 +22,7 @@ bool has_prefix(const string &str, const string &prefix)
 
 int main()
 {
-	HINTERNET hInternetOpen, hInternetOpen1, hInternetConnect, hInternetConnect1, hHttpOpenRequest, hFtpOpenFile, hFtpFindFirstFile, hInternetFindNextFile;
-	char* response[256];
+	HINTERNET hInternetOpen, hInternetOpen1, hInternetConnect, hInternetConnect1, hHttpOpenRequest, hFtpFindFirstFile;
 	WIN32_FIND_DATA FileData;
 
 	if ((hInternetOpen = InternetOpen("CSSO_ftp",
@@ -36,8 +35,8 @@ int main()
 		return -1;
 	}
 
-	if ((hInternetOpen1 = InternetOpen("CSSO_hhtp",
-		INTERNET_OPEN_TYPE_DIRECT,
+	if ((hInternetOpen1 = InternetOpen("CSSO_http",
+		INTERNET_OPEN_TYPE_PRECONFIG,
 		NULL,
 		NULL,
 		0)) == NULL)
@@ -86,11 +85,12 @@ int main()
 					while (getline(fin, line))
 					{
 						if (has_prefix(line, "http") && has_suffix(line, ".exe"))
-						{
-							cout << file.c_str() << " " << line << endl;
-							//aici nu hardcoda
+						{ 
+							string resource = line.substr(line.find('//', 8)); // /~george.popoiu/CCSO/a.exe
+							string link = line.substr(7, line.length() - (resource.length() + 7)); //students.info.uaic.ro
+
 							if ((hInternetConnect1 = InternetConnect(hInternetOpen1,
-								"students.info.uaic.ro",
+								link.c_str(),
 								INTERNET_DEFAULT_HTTP_PORT,
 								NULL,
 								NULL,
@@ -104,7 +104,7 @@ int main()
 
 							if ((hHttpOpenRequest = HttpOpenRequest(hInternetConnect1,
 												"GET", 
-												"//~george.popoiu//CCSO//a.exe",
+												resource.c_str(),
 												"1.1",
 												NULL,
 												NULL,
@@ -125,7 +125,7 @@ int main()
 								return -1;
 							}
 
-							char buffer[256];
+							char buffer[4096];
 							DWORD bytesRead;
 							if (!InternetReadFile(hHttpOpenRequest,
 												  buffer,
@@ -135,6 +135,20 @@ int main()
 								cout << "InternetReadFile error. Error: " << GetLastError() << endl;
 								return -1;
 							}
+							cout << buffer << endl;
+							while (bytesRead)
+							{
+								if (!InternetReadFile(hHttpOpenRequest,
+									buffer,
+									256,
+									&bytesRead))
+								{
+									cout << "InternetReadFile error. Error: " << GetLastError() << endl;
+									return -1;
+								}
+								//pun in fisier
+							}
+
 							CloseHandle(hHttpOpenRequest);
 							CloseHandle(hInternetConnect1);
 						}
