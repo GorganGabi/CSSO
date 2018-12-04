@@ -1,14 +1,14 @@
 ﻿  Source.cpp
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(88): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(97): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
           with
           [
               _Elem=char
           ]
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(88): warning C4309: 'argument': truncation of constant value
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(137): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(97): warning C4309: 'argument': truncation of constant value
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(146): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
           with
           [
               _Elem=char
           ]
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(137): warning C4309: 'argument': truncation of constant value
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(146): warning C4309: 'argument': truncation of constant value
   Tema4.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema4\Debug\Tema4.exe

