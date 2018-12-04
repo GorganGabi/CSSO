@@ -25,21 +25,13 @@ int main()
 	HINTERNET hInternetOpen, hInternetOpen1, hInternetConnect, hInternetConnect1, hHttpOpenRequest, hFtpFindFirstFile;
 	WIN32_FIND_DATA FileData;
 
-	if ((hInternetOpen = InternetOpen("CSSO_ftp",
-		INTERNET_OPEN_TYPE_PRECONFIG,
-		NULL,
-		NULL,
-		0)) == NULL)
+	if ((hInternetOpen = InternetOpen("CSSO_ftp", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0)) == NULL)
 	{
 		cout << "InternetOpen error. Error: " << GetLastError() << endl;
 		return -1;
 	}
 
-	if ((hInternetOpen1 = InternetOpen("CSSO_http",
-		INTERNET_OPEN_TYPE_PRECONFIG,
-		NULL,
-		NULL,
-		0)) == NULL)
+	if ((hInternetOpen1 = InternetOpen("CSSO_http", INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0)) == NULL)
 	{
 		cout << "InternetOpen error. Error: " << GetLastError() << endl;
 		return -1;
@@ -58,11 +50,7 @@ int main()
 		return -1;
 	}
 
-	if ((hFtpFindFirstFile = FtpFindFirstFile(hInternetConnect,
-		NULL,
-		&FileData,
-		INTERNET_FLAG_RELOAD,
-		NULL)) == NULL)
+	if ((hFtpFindFirstFile = FtpFindFirstFile(hInternetConnect, NULL, &FileData, INTERNET_FLAG_RELOAD, NULL)) == NULL)
 	{
 		cout << "FtpFindFirstFile error. Error: " << GetLastError() << endl;
 		return -1;
@@ -94,7 +82,7 @@ int main()
 					{
 						if (has_prefix(line, "http") && has_suffix(line, ".exe"))
 						{
-							string resource = line.substr(line.find('//', 8)); // /~george.popoiu/CCSO/a.exe
+							string resource = line.substr(line.find('//', 8)); // ~george.popoiu/CCSO/a.exe
 							string link = line.substr(7, line.length() - (resource.length() + 7)); //students.info.uaic.ro
 
 							if ((hInternetConnect1 = InternetConnect(hInternetOpen1,
@@ -123,54 +111,62 @@ int main()
 								return -1;
 							}
 
-							if (!HttpSendRequest(hHttpOpenRequest,
-								NULL,
-								0,
-								NULL,
-								NULL))
+							if (!HttpSendRequest(hHttpOpenRequest, NULL, 0, NULL, NULL))
 							{
 								cout << "HttpSendRequest error. Error: " << GetLastError() << endl;
 								return -1;
 							}
 
-							char buffer[256];
-							DWORD bytesRead;
-							if (!InternetReadFile(hHttpOpenRequest,
-								buffer,
-								256,
-								&bytesRead))
+							string exe = line.substr(line.find_last_of('//') + 1);
+							HANDLE hLocalFile = CreateFile(exe.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+							if (hLocalFile == NULL)
+							{
+								printf("[ERROR] CreateFile : %d\n", GetLastError());
+							}
+
+							char buffer[4096];
+							DWORD bytesRead, bytesWritten;
+							if (!InternetReadFile(hHttpOpenRequest, buffer, 4096, &bytesRead))
 							{
 								cout << "InternetReadFile error. Error: " << GetLastError() << endl;
 								return -1;
 							}
-							string exe = line.substr(line.find_last_of('//') + 1);
-							ofstream fout(exe);
-							fout << buffer;
+							if (WriteFile(hLocalFile, buffer, bytesRead, &bytesWritten, NULL) == 0)
+							{
+								printf("[ERROR] WriteFile : %d\n", GetLastError());
+								break;
+							}
+							//ofstream fout(exe);
+							//fout << buffer;
 
 							while (bytesRead)
 							{
 								memset(buffer, 0, sizeof(buffer));
-								if (!InternetReadFile(hHttpOpenRequest,
-									buffer,
-									256,
-									&bytesRead))
+								if (!InternetReadFile(hHttpOpenRequest, buffer,	4096, &bytesRead))
 								{
 									cout << "InternetReadFile error. Error: " << GetLastError() << endl;
 									return -1;
 								}
-								fout << buffer;
+
+								if (WriteFile(hLocalFile, buffer, bytesRead, &bytesWritten, NULL) == 0)
+								{
+									printf("[ERROR] WriteFile : %d\n", GetLastError());
+									break;
+								}
+								//fout << buffer;
 							}
-							fout.close();
+							//fout.close();
+							CloseHandle(hLocalFile);
 
 							PROCESS_INFORMATION pi;
 							STARTUPINFO si;
 							memset(&si, 0, sizeof(si));
 							si.cb = sizeof(si);
 
-							/*if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+							if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &si, &pi)) {
 								cout << "Cannot create process.Error code: " << GetLastError();
 								return -1;
-							}*/
+							}
 							InternetCloseHandle(hHttpOpenRequest);
 							InternetCloseHandle(hInternetConnect1);
 						}
