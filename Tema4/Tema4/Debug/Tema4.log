@@ -11,4 +11,5 @@ c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(146): warning C4305: 
               _Elem=char
           ]
 c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(146): warning C4309: 'argument': truncation of constant value
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(165): warning C4101: 'pi': unreferenced local variable
   Tema4.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema4\Debug\Tema4.exe

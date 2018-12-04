@@ -167,12 +167,12 @@ int main()
 							memset(&si, 0, sizeof(si));
 							si.cb = sizeof(si);
 
-							if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
+							/*if (!CreateProcess(exe.c_str(), NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi)) {
 								cout << "Cannot create process.Error code: " << GetLastError();
 								return -1;
-							}
-							CloseHandle(hHttpOpenRequest);
-							CloseHandle(hInternetConnect1);
+							}*/
+							InternetCloseHandle(hHttpOpenRequest);
+							InternetCloseHandle(hInternetConnect1);
 						}
 					}
 					fin.close();
@@ -181,9 +181,9 @@ int main()
 		}
 	} while (InternetFindNextFile(hFtpFindFirstFile, &FileData));
 
-	CloseHandle(hInternetOpen1);
-	CloseHandle(hFtpFindFirstFile);
-	CloseHandle(hInternetConnect);
-	CloseHandle(hInternetOpen);
+	InternetCloseHandle(hInternetOpen1);
+	InternetCloseHandle(hFtpFindFirstFile);
+	InternetCloseHandle(hInternetConnect);
+	InternetCloseHandle(hInternetOpen);
 	return 1;
 }
