@@ -5,10 +5,10 @@ c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(85): warning C4305: '
               _Elem=char
           ]
 c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(85): warning C4309: 'argument': truncation of constant value
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(120): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(87): warning C4305: 'argument': truncation from 'int' to 'const _Elem'
           with
           [
               _Elem=char
           ]
-c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(120): warning C4309: 'argument': truncation of constant value
+c:\users\gabi\documents\github\csso\tema4\tema4\source.cpp(87): warning C4309: 'argument': truncation of constant value
   Tema4.vcxproj -> C:\Users\Gabi\Documents\GitHub\CSSO\Tema4\Debug\Tema4.exe

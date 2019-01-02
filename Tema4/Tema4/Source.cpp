@@ -84,6 +84,7 @@ int main()
 						{
 							string resource = line.substr(line.find('//', 8)); // ~george.popoiu/CCSO/a.exe
 							string link = line.substr(7, line.length() - (resource.length() + 7)); //students.info.uaic.ro
+							string exe = line.substr(line.find_last_of('//') + 1);
 
 							if ((hInternetConnect1 = InternetConnect(hInternetOpen1,
 								link.c_str(),
@@ -116,8 +117,12 @@ int main()
 								cout << "HttpSendRequest error. Error: " << GetLastError() << endl;
 								return -1;
 							}
+							else
+							{
+								cout << "Downloading "<< exe << endl;
+							}
 
-							string exe = line.substr(line.find_last_of('//') + 1);
+							
 							HANDLE hLocalFile = CreateFile(exe.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 							if (hLocalFile == NULL)
 							{
